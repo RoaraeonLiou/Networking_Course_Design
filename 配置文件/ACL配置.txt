@@ -1,0 +1,29 @@
+网络层安全
+1.标准ACL
+  基于源地址进行控制
+
+  添加规则
+acesss-list 访问列表号 允许/拒绝 网络号 反掩码 
+access-list xx permit/deny xx.xx.xx.xx xx.xx.xx.xx
+access-list xx permit/deny any
+	单个地址
+		access-list xx deny host xx.xx.xx.xx
+		或
+		access-list xx deny xx.xx.xx.xx 0.0.0.0
+
+  清空列表规则
+no access-list 访问列表号
+  规则由上至下匹配
+
+  绑定访问控制列表
+int f0/x	//打开端口
+ip access-group 访问列表号 in/out
+
+  展示访问控制列表
+show access-list
+
+
+
+2.扩展ACL
+基于源地址、目标地址、协议、端口号进行控制
+

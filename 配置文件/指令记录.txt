@@ -1,0 +1,249 @@
+配置 三层交换机f0/3接口
+Switch#config
+Configuring from terminal, memory, or network [terminal]? 
+Enter configuration commands, one per line.  End with CNTL/Z.
+Switch(config)#int f0/3
+Switch(config-if)#no switchport
+%LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/3, changed state to down
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/3, changed state to up
+Switch(config-if)#ip address 211.24.46.66 255.255.255.0
+
+设置Vlan
+Switch(config)#vlan 10
+Switch(config-vlan)#exit
+Switch(config)#interface range fastethernet 0/2 -24
+Switch(config-if-range)#switchport access vlan 10
+Switch(config-if-range)#exit
+Switch(config)#
+
+
+汇聚层设置Vlan并将端口设置为Trunk模式
+Switch(config)#vlan 10
+Switch(config-vlan)#vlan 20
+Switch(config-vlan)#exit
+Switch(config)#interface range fastethernet 0/1-4
+Switch(config-if-range)#switchport mode trunk 
+
+Switch(config-if-range)#
+%LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/2, changed state to down
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/2, changed state to up
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/3, changed state to down
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/3, changed state to up
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/4, changed state to down
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/4, changed state to up
+
+Switch(config-if-range)#exit
+Switch(config)#
+
+
+
+3层交换机中配置Vlan
+Switch(config)#vlan 10
+Switch(config-vlan)#
+%LINK-5-CHANGED: Interface Vlan10, changed state to up
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface Vlan10, changed state to up
+
+Switch(config-vlan)#vlan 20
+Switch(config-vlan)#vlan 50
+Switch(config-vlan)#vlan 60
+Switch(config-vlan)#vlan 70
+Switch(config-vlan)#vlan 80
+Switch(config-vlan)#vlan 90
+
+
+3层交换机设置Vlan虚拟网关
+Switch(config)#interface vlan 10
+Switch(config-if)#ip address 211.24.46.1 255.255.255.224
+Switch(config-if)#exit
+Switch(config)#interface vlan 20
+Switch(config-if)#
+%LINK-5-CHANGED: Interface Vlan20, changed state to up
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface Vlan20, changed state to up
+
+Switch(config-if)#ip address 192.168.1.1 255.255.255.0
+Switch(config-if)#
+
+
+
+三层交换机配置与路由器接口
+Switch(config)#interface fastEthernet 0/4
+Switch(config-if)#no switchport 
+Switch(config-if)#ip address 211.24.46.225 255.255.255.224
+Switch(config-if)#
+
+路由器设置端口
+Router>en
+Router#configure 
+Configuring from terminal, memory, or network [terminal]? 
+Enter configuration commands, one per line.  End with CNTL/Z.
+Router(config)#interface fastEthernet 0/0
+Router(config-if)#no shutdown 
+
+Router(config-if)#
+%LINK-5-CHANGED: Interface FastEthernet0/0, changed state to up
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/0, changed state to up
+
+Router(config-if)#ip address 211.24.46.226 255.255.255.224
+Router(config-if)#exit
+Router(config)#interface fastEthernet 0/1
+Router(config-if)#no shutdown 
+
+Router(config-if)#
+%LINK-5-CHANGED: Interface FastEthernet0/1, changed state to up
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/1, changed state to up
+
+Router(config-if)#ip address 193.168.1.1 255.255.255.0
+Router(config-if)#exit
+Router(config)#
+
+
+3层交换机配置RIP协议
+
+Switch(config)#ip routing 
+Switch(config)#router rip
+Switch(config-router)#version 2
+Switch(config-router)#network 211.24.46.0
+Switch(config-router)#network 211.24.46.64
+Switch(config-router)#network 211.24.46.96
+Switch(config-router)#network 211.24.46.128
+Switch(config-router)#network 211.24.46.160
+Switch(config-router)#network 211.24.46.192
+Switch(config-router)#network 211.24.46.208
+Switch(config-router)#network 211.24.46.224
+Switch(config-router)#network 192.168.1.0
+
+
+路由器配置RIP协议
+
+Router>en
+Router#config
+Configuring from terminal, memory, or network [terminal]? 
+Enter configuration commands, one per line.  End with CNTL/Z.
+Router(config)#router rip
+Router(config-router)#version 2
+Router(config-router)#network 211.24.46.224
+Router(config-router)#network 193.168.1.0
+Router(config-router)#exit
+
+
+
+3层路由DHCP配置
+Switch#configure 
+Configuring from terminal, memory, or network [terminal]? 
+Enter configuration commands, one per line.  End with CNTL/Z.
+Switch(config)#ip dhcp excluded-address 211.24.64.1
+Switch(config)#ip dhcp excluded-address 211.24.64.97
+Switch(config)#ip dhcp excluded-address 211.24.64.129
+Switch(config)#ip dhcp excluded-address 211.24.64.161
+Switch(config)#ip dhcp excluded-address 211.24.64.193
+Switch(config)#ip dhcp excluded-address 211.24.64.209
+Switch(config)#ip dhcp excluded-address 192.168.1.1
+Switch(config)#
+
+
+DHCP 地址池配置
+Switch(config)#ip dhcp pool 10
+Switch(dhcp-config)#network 211.24.46.0 255.255.255.224
+Switch(dhcp-config)#default-router 211.24.46.1
+Switch(dhcp-config)#dns-server 211.24.46.67
+Switch(dhcp-config)#exit
+Switch(config)#ip dhcp pool 50
+Switch(dhcp-config)#network 211.24.46.96 255.255.255.224
+Switch(dhcp-config)#default-router 211.24.46.97
+Switch(dhcp-config)#dns-server 211.24.46.67
+Switch(dhcp-config)#exit
+Switch(config)#ip dhcp pool 60
+Switch(dhcp-config)#network 211.24.46.128 255.255.255.224
+Switch(dhcp-config)#default-router 211.24.46.129
+Switch(dhcp-config)#dns-server 211.24.46.67
+Switch(dhcp-config)#exit
+Switch(config)#ip dhcp pool 70
+Switch(dhcp-config)#network 211.24.46.160 255.255.255.224
+Switch(dhcp-config)#default-router 211.24.46.161
+Switch(dhcp-config)#dns-server 211.24.46.67
+Switch(dhcp-config)#exit
+Switch(config)#ip dhcp pool 80
+Switch(dhcp-config)#network 211.24.46.192 255.255.255.240
+Switch(dhcp-config)#default-router 211.24.46.193
+Switch(dhcp-config)#dns-server 211.24.46.67
+Switch(dhcp-config)#exit
+Switch(config)#ip dhcp pool 90
+Switch(dhcp-config)#network 211.24.46.208 255.255.255.240
+Switch(dhcp-config)#default-router 211.24.46.209
+Switch(dhcp-config)#dns-server 211.24.46.67
+Switch(dhcp-config)#exit
+Switch(config)#ip dhcp pool 20
+Switch(dhcp-config)#network 192.168.1.0 255.255.255.0
+Switch(dhcp-config)#default-router 192.168.1.1
+Switch(dhcp-config)#dns-server 211.24.46.67
+Switch(dhcp-config)#exit
+Switch(config)#
+
+
+
+NAT配置
+Router(config)#interface serial 0/2/0
+Router(config-if)#ip nat outside 
+Router(config-if)#exit
+Router(config)#interface fastEthernet 0/0
+Router(config-if)#ip nat inside 
+Router(config-if)#exit
+Router(config)#
+Router(config)#
+Router(config)#access-list 20 permit 192.168.1.0 0.0.0.255
+Router(config)#
+
+Router(config)#ip nat pool pool20 211.24.46.33 211.24.46.62 netmask 255.255.255.224
+
+Router(config)#ip nat inside source list 20 pool pool20 overload 
+
+查看NAT转换记录与状态
+Router#show ip nat statistics 
+Total translations: 4 (0 static, 4 dynamic, 4 extended)
+Outside Interfaces: Serial0/2/0
+Inside Interfaces: FastEthernet0/0
+Hits: 8  Misses: 186
+Expired translations: 4
+Dynamic mappings:
+-- Inside Source
+access-list 20 pool pool20 refCount 4
+ pool pool20: netmask 255.255.255.224
+       start 211.24.46.33 end 211.24.46.62
+       type generic, total addresses 30 , allocated 1 (3%), misses 0
+
+Router#show ip nat translations 
+Pro  Inside global     Inside local       Outside local      Outside global
+icmp 211.24.46.33:13   192.168.1.5:13     200.200.200.200:13 200.200.200.200:13
+icmp 211.24.46.33:14   192.168.1.5:14     200.200.200.200:14 200.200.200.200:14
+icmp 211.24.46.33:15   192.168.1.5:15     200.200.200.200:15 200.200.200.200:15
+icmp 211.24.46.33:16   192.168.1.5:16     200.200.200.200:16 200.200.200.200:16
+
+
+暂时解绑NAT地址池
+Router(config)#no ip nat inside source list 20 pool pool20 overload
+
+
+公司路由器配置ACL，使得专用地址无法传出
+Router(config)#access-list 10 deny 192.168.1.0 0.0.0.255
+Router(config)#access-list 10 permit any
+Router(config)#interface serial 0/2/0
+Router(config-if)#ip access-group 10 out 
+Router(config-if)#exit
+
+
+3层交换机配置ACL，使得会议室计算机无法访问外网
+Switch(config)#access-list 90 deny 211.24.46.208 0.0.0.15
+Switch(config)#access-list 90 permit any
+Switch(config)#interface fastEthernet 0/4
+Switch(config-if)#ip access-group 90 out 
+Switch(config-if)#

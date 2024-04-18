@@ -1,0 +1,44 @@
+https://baijiahao.baidu.com/s?id=1599059544691081269&wfr=spider&for=pc
+1.定义 isakmp Internet 安全关联和密钥管理协议 （ 第一阶段 IPSEC）
+crypto isakmp policy 1
+encryption 3des
+hash md5
+authentication pre-share
+group 2
+
+
+2.设置推送到客户端的组策略
+ip local pool VPN-POOL 211.24.46.241 211.24.46.254
+
+3.定义组策略
+Router(config)#crypto isakmp client configuration group TYUT-VPN
+key tyut
+pool VPN-POOL
+
+4.启用 AAA 功能及授权
+aaa new-model
+aaa authorization network TYUT-VPN-ACCESS local
+
+5. 指定授权方式
+crypto map CLIENTMAP isakmp authorization list TYUT-VPN-ACCESS
+crypto map CLIENTMAP client configuration address respond
+
+
+6.定义交换集 （第二阶段 IPSEC）
+crypto ipsec transform-set TYUT-TRANSFORM esp-3des esp-md5-hmac
+
+7.定义加密图
+crypto dynamic-map TYUT-MAP 1
+set transform-set TYUT-TRANSFORM
+reverse-route
+exit
+crypto map CLIENTMAP 1 ipsec-isakmp dynamic TYUT-MAP
+
+8.配置认证方式
+aaa authentication login TYUT-VPN-USERS local 
+username tyut secret vpnvpn
+crypto map CLIENTMAP client authentication list TYUT-VPN-USERS
+
+9.应用静态加密图
+interface serial0/2/0
+crypto map CLIENTMAP

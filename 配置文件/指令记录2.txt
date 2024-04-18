@@ -1,0 +1,185 @@
+vlan 90
+exit
+interface range fastethernet 0/13 -24
+switchport access vlan 90
+exit
+
+
+
+vlan 10
+vlan 20
+exit
+interface range fastethernet 0/1-4
+switchport mode trunk 
+
+
+
+vlan 50
+vlan 60
+vlan 70
+vlan 80
+vlan 90
+exit
+interface range fastethernet 0/1-5
+switchport mode trunk 
+
+
+
+vlan 10
+vlan 20
+vlan 50
+vlan 60
+vlan 70
+vlan 80
+vlan 90
+
+
+
+
+interface vlan 10
+ip address 211.24.46.1 255.255.255.224
+exit
+
+interface vlan 20
+ip address 192.168.1.1 255.255.255.0
+exit
+
+interface vlan 50
+ip address 211.24.46.97 255.255.255.224
+exit
+
+interface vlan 60
+ip address 211.24.46.129 255.255.255.224
+exit
+
+interface vlan 70
+ip address 211.24.46.161 255.255.255.224
+exit
+
+interface vlan 80
+ip address 211.24.46.193 255.255.255.240
+exit
+
+interface vlan 90
+ip address 211.24.46.209 255.255.255.240
+exit
+
+
+interface fastEthernet 0/4
+no switchport 
+ip address 211.24.46.225 255.255.255.224
+
+
+
+
+interface fastEthernet 0/0
+no shutdown 
+
+ip address 211.24.46.226 255.255.255.224
+exit
+interface fastEthernet 0/1
+no shutdown 
+
+ip address 193.168.1.1 255.255.255.0
+exit
+
+
+
+ip routing 
+router rip
+version 2
+network 211.24.46.0
+network 211.24.46.64
+network 211.24.46.96
+network 211.24.46.128
+network 211.24.46.160
+network 211.24.46.192
+network 211.24.46.208
+network 211.24.46.224
+network 192.168.1.0
+
+
+
+
+router rip
+version 2
+network 211.24.46.224
+network 193.168.1.0
+exit
+
+
+
+
+ip dhcp excluded-address 211.24.64.1
+ip dhcp excluded-address 211.24.64.97
+ip dhcp excluded-address 211.24.64.129
+ip dhcp excluded-address 211.24.64.161
+ip dhcp excluded-address 211.24.64.193
+ip dhcp excluded-address 211.24.64.209
+ip dhcp excluded-address 192.168.1.1
+
+
+
+ip dhcp pool 10
+network 211.24.46.0 255.255.255.224
+default-router 211.24.46.1
+dns-server 211.24.46.67
+exit
+ip dhcp pool 50
+network 211.24.46.96 255.255.255.224
+default-router 211.24.46.97
+dns-server 211.24.46.67
+exit
+ip dhcp pool 60
+network 211.24.46.128 255.255.255.224
+default-router 211.24.46.129
+dns-server 211.24.46.67
+exit
+ip dhcp pool 70
+network 211.24.46.160 255.255.255.224
+default-router 211.24.46.161
+dns-server 211.24.46.67
+exit
+ip dhcp pool 80
+network 211.24.46.192 255.255.255.240
+default-router 211.24.46.193
+dns-server 211.24.46.67
+exit
+ip dhcp pool 90
+network 211.24.46.208 255.255.255.240
+default-router 211.24.46.209
+dns-server 211.24.46.67
+exit
+ip dhcp pool 20
+network 192.168.1.0 255.255.255.0
+default-router 192.168.1.1
+dns-server 211.24.46.67
+exit
+
+
+
+
+NAT配置
+interface serial 0/2/0
+ip nat outside 
+exit
+interface fastEthernet 0/0
+ip nat inside 
+exit
+
+
+access-list 20 permit 192.168.1.0 0.0.0.255
+
+
+ip nat pool pool20 211.24.46.33 211.24.46.62 netmask 255.255.255.224
+
+ip nat inside source list 20 pool pool20 overload
+
+
+
+
+
+ACL配置
+access-list 100 permit ip 211.24.46.240 0.0.0.15 any
+access-list 100 permit icmp any any echo-reply
+access-list 100 permit tcp any 211.24.46.68 0.0.0.0 
